@@ -1,0 +1,1840 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#16834a">
+<title>Admin Settings | Kista</title>
+
+<style>
+:root {
+  --primary: #16834a;
+  --primary-dark: #106b3b;
+  --primary-soft: #e9f7ef;
+  --primary-border: #bde5cc;
+  --bg: #f5f8f6;
+  --surface: #ffffff;
+  --surface-soft: #f8faf9;
+  --text: #17251d;
+  --muted: #718078;
+  --border: #e2e9e4;
+  --danger: #d63849;
+  --danger-soft: #fff0f1;
+  --warning: #a66a00;
+  --shadow: 0 5px 22px rgba(20, 54, 34, .055);
+  --radius: 15px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+body.dark {
+  --bg: #111915;
+  --surface: #1b2520;
+  --surface-soft: #222e27;
+  --text: #ecf5ee;
+  --muted: #a0b1a6;
+  --border: #34453a;
+  --primary-soft: #203e2c;
+  --primary-border: #386b49;
+  --danger-soft: #3d2429;
+  --shadow: 0 5px 22px rgba(0, 0, 0, .12);
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(22,131,74,.25);
+  outline-offset: 2px;
+}
+
+.app { min-height: 100vh; }
+
+.sidebar {
+  width: 255px;
+  background: #112b1d;
+  color: #e8f3eb;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 23px 15px 15px;
+  overflow-y: auto;
+  transition: transform .25s ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 9px 25px;
+  border-bottom: 1px solid rgba(255,255,255,.11);
+}
+
+.brand-mark {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: #fff;
+  background: linear-gradient(135deg, #27a45e, #11703c);
+  font-size: 24px;
+  font-weight: 900;
+  box-shadow: 0 4px 12px rgba(0,0,0,.16);
+}
+
+.brand-name { font-weight: 800; font-size: 20px; letter-spacing: -.5px; }
+.brand-sub { color: #a9c5b3; font-size: 11px; margin-top: 1px; }
+
+.nav-label {
+  color: #83a58f;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  margin: 25px 11px 10px;
+}
+
+.nav {
+  display: grid;
+  gap: 5px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #c3d6c9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  transition: background .15s, color .15s;
+  font-weight: 550;
+}
+
+.nav a:hover { background: rgba(255,255,255,.07); color: #fff; }
+.nav a.active {
+  background: #1b7443;
+  color: #fff;
+  box-shadow: inset 3px 0 #69d48e;
+}
+.nav-icon {
+  width: 23px;
+  text-align: center;
+  font-size: 17px;
+}
+
+.sidebar-bottom { margin-top: auto; padding-top: 25px; }
+
+.sidebar-note {
+  padding: 13px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.065);
+  border: 1px solid rgba(255,255,255,.09);
+  color: #c2d7c9;
+  font-size: 12px;
+}
+
+.sidebar-note strong { display: block; color: #fff; margin-bottom: 3px; }
+
+.sidebar-footer {
+  padding: 18px 8px 0;
+  color: #87a993;
+  font-size: 11px;
+  text-align: center;
+}
+
+.main {
+  margin-left: 255px;
+  min-width: 0;
+}
+
+.topbar {
+  height: 76px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  gap: 18px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.top-left, .top-actions, .page-heading, .heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.breadcrumb { color: var(--muted); font-size: 12px; }
+.breadcrumb strong { color: var(--text); font-weight: 700; }
+
+.top-actions { gap: 10px; }
+
+.icon-btn {
+  height: 39px;
+  width: 39px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--text);
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  position: relative;
+}
+
+.icon-btn:hover { background: var(--surface-soft); }
+
+.avatar-small {
+  height: 39px;
+  width: 39px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  overflow: hidden;
+  border: 1px solid var(--primary-border);
+}
+
+.avatar-small img, .profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobile-menu { display: none; }
+
+.content {
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 30px 32px 45px;
+}
+
+.page-heading {
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 23px;
+  flex-wrap: wrap;
+}
+
+h1 { font-size: 27px; letter-spacing: -.8px; margin: 0 0 5px; line-height: 1.25; }
+.subtitle { color: var(--muted); margin: 0; font-size: 13px; }
+
+.heading-actions { flex-wrap: wrap; }
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: .15s ease;
+  white-space: nowrap;
+}
+
+.btn:hover { background: var(--surface-soft); }
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); color: #fff; }
+.btn-danger { color: var(--danger); border-color: #f1c6cb; }
+.btn-danger:hover { background: var(--danger-soft); }
+.btn-sm { padding: 7px 10px; font-size: 12px; border-radius: 8px; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.status-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
+  border-radius: 12px;
+  margin-bottom: 23px;
+  flex-wrap: wrap;
+}
+
+.status-left { display: flex; align-items: center; gap: 10px; }
+.status-check {
+  height: 30px; width: 30px; display: grid; place-items: center;
+  background: var(--surface); border-radius: 9px; color: var(--primary);
+  font-weight: 900;
+}
+.status-strip strong { display: block; font-size: 13px; }
+.status-strip small { display: block; color: var(--muted); margin-top: 1px; }
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: 225px minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+}
+
+.settings-nav {
+  position: sticky;
+  top: 96px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding: 10px;
+}
+
+.settings-nav-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 800;
+  padding: 12px 10px 7px;
+}
+
+.settings-nav button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  width: 100%;
+  text-align: left;
+  padding: 11px 10px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 650;
+  margin-bottom: 2px;
+}
+
+.settings-nav button:hover { background: var(--surface-soft); color: var(--text); }
+.settings-nav button.active { background: var(--primary-soft); color: var(--primary); }
+.settings-nav .s-icon { font-size: 16px; width: 21px; text-align: center; }
+
+.settings-content { min-width: 0; display: grid; gap: 20px; }
+
+.settings-section {
+  scroll-margin-top: 100px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 20px 23px 17px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.section-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.section-icon {
+  height: 39px;
+  width: 39px;
+  flex: 0 0 39px;
+  display: grid;
+  place-items: center;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 11px;
+  font-size: 19px;
+}
+
+.section-header h2 { margin: 0 0 3px; font-size: 16px; letter-spacing: -.2px; }
+.section-header p { margin: 0; font-size: 12px; color: var(--muted); }
+.section-body { padding: 22px 23px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 20px;
+}
+
+.field { min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 750;
+  margin-bottom: 7px;
+}
+
+.required { color: var(--danger); }
+
+.input, .select, .textarea {
+  width: 100%;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 11px 12px;
+  outline: none;
+  transition: border-color .15s;
+}
+
+.input, .select { height: 43px; }
+.textarea { min-height: 93px; resize: vertical; }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--primary); }
+.input::placeholder, .textarea::placeholder { color: #9aa79f; }
+.help { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.input:disabled { opacity: .65; cursor: not-allowed; }
+
+.profile-editor {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-avatar {
+  height: 83px;
+  width: 83px;
+  flex: 0 0 83px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  border: 3px solid var(--surface);
+  outline: 1px solid var(--primary-border);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  font-size: 25px;
+  font-weight: 800;
+  overflow: hidden;
+}
+
+.profile-actions strong { display: block; font-size: 14px; margin-bottom: 3px; }
+.profile-actions p { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+.profile-actions-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.divider { border: 0; border-top: 1px solid var(--border); margin: 22px 0; }
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+}
+.setting-row:first-child { padding-top: 0; }
+.setting-row:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.setting-info { min-width: 0; }
+.setting-info strong { display: block; font-size: 13px; margin-bottom: 3px; }
+.setting-info p { color: var(--muted); font-size: 12px; margin: 0; }
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 43px;
+  width: 43px;
+  height: 24px;
+  align-items: center;
+}
+
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: #cbd5ce;
+  cursor: pointer;
+  transition: background .2s;
+}
+.switch-track::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  transition: transform .2s;
+}
+.switch input:checked + .switch-track { background: var(--primary); }
+.switch input:checked + .switch-track::before { transform: translateX(19px); }
+.switch input:focus-visible + .switch-track { outline: 3px solid rgba(22,131,74,.25); outline-offset: 2px; }
+
+.color-options { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.color-option {
+  height: 33px; width: 33px; border-radius: 50%;
+  border: 3px solid var(--surface); outline: 1px solid var(--border);
+  position: relative;
+}
+.color-option.selected { outline: 2px solid var(--text); outline-offset: 2px; }
+.color-option.selected::after {
+  content: "✓"; color: #fff; font-weight: 900;
+  position: absolute; inset: 0; display: grid; place-items: center;
+  text-shadow: 0 1px 3px rgba(0,0,0,.4);
+}
+.color-custom { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.color-custom input { width: 36px; height: 35px; padding: 2px; border: 1px solid var(--border); background: var(--surface); border-radius: 7px; cursor: pointer; }
+
+.info-box {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 14px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 18px;
+}
+.info-box strong { color: var(--text); display: block; margin-bottom: 3px; }
+
+.security-box {
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.security-box:last-child { margin-bottom: 0; }
+.security-heading { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 5px; }
+.security-heading strong { font-size: 13px; }
+.security-box p { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 20px; padding: 4px 9px; font-size: 10px; font-weight: 800;
+}
+.badge-green { color: var(--primary); background: var(--primary-soft); }
+.badge-gray { color: var(--muted); background: var(--surface-soft); border: 1px solid var(--border); }
+.badge-red { color: var(--danger); background: var(--danger-soft); }
+
+.danger-card { border-color: #efc4c9; }
+.danger-card .section-icon { background: var(--danger-soft); color: var(--danger); }
+.danger-card .section-header { border-bottom-color: #efc4c9; }
+
+.section-footer {
+  padding: 14px 23px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-note { color: var(--muted); font-size: 11px; }
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 15px 18px;
+  box-shadow: var(--shadow);
+}
+.bottom-actions p { color: var(--muted); margin: 0; font-size: 12px; }
+.bottom-actions-buttons { display: flex; gap: 9px; flex-wrap: wrap; }
+
+.toast-container {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 999;
+  display: grid;
+  gap: 9px;
+  width: min(350px, calc(100vw - 30px));
+}
+
+.toast {
+  background: #163b26;
+  color: #fff;
+  padding: 13px 15px;
+  border-radius: 11px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.2);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  animation: toastIn .2s ease;
+}
+.toast.error { background: #842b37; }
+.toast strong { display: block; font-size: 13px; }
+.toast span { font-size: 12px; opacity: .9; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.overlay { display: none; }
+
+@media (max-width: 1100px) {
+  .settings-layout { grid-template-columns: 195px minmax(0, 1fr); gap: 15px; }
+  .content { padding: 25px 22px 35px; }
+  .topbar { padding: 0 22px; }
+}
+
+@media (max-width: 800px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .mobile-menu { display: grid; }
+  .overlay.show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.42);
+    z-index: 90;
+  }
+  .settings-layout { grid-template-columns: 1fr; }
+  .settings-nav {
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 8px;
+    scrollbar-width: thin;
+  }
+  .settings-nav-label { display: none; }
+  .settings-nav button { width: auto; flex: 0 0 auto; margin: 0; padding: 10px 12px; }
+  .settings-nav button span:last-child { white-space: nowrap; }
+  .topbar { height: 66px; }
+  .content { padding-top: 22px; }
+}
+
+@media (max-width: 540px) {
+  .content { padding: 19px 13px 30px; }
+  .topbar { padding: 0 13px; }
+  h1 { font-size: 23px; }
+  .breadcrumb { display: none; }
+  .page-heading { gap: 13px; }
+  .heading-actions { width: 100%; }
+  .heading-actions .btn { flex: 1; }
+  .section-header { padding: 16px; }
+  .section-body { padding: 17px 16px; }
+  .section-footer { padding: 13px 16px; }
+  .form-grid { grid-template-columns: 1fr; gap: 15px; }
+  .field.full { grid-column: auto; }
+  .profile-editor { align-items: flex-start; gap: 14px; }
+  .profile-avatar { width: 66px; height: 66px; flex-basis: 66px; }
+  .setting-row { gap: 12px; }
+  .bottom-actions { align-items: stretch; }
+  .bottom-actions-buttons { width: 100%; }
+  .bottom-actions-buttons .btn { flex: 1; }
+  .status-strip { align-items: flex-start; }
+  .status-strip > .badge { margin-left: 40px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">K</div>
+      <div>
+        <div class="brand-name">Kista</div>
+        <div class="brand-sub">Contribution Management</div>
+      </div>
+    </div>
+
+    <div class="nav-label">Main menu</div>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="dashboard.html"><span class="nav-icon">⌂</span>Dashboard</a>
+      <a href="RC.html"><span class="nav-icon">♙</span>Customers</a>
+      <a href="CO.html"><span class="nav-icon">＋</span>Record Payment</a>
+      <a href="MP.html"><span class="nav-icon">▤</span>Payment History</a>
+      <a href="monthlyrecord.html"><span class="nav-icon">▦</span>Monthly Records</a>
+    </nav>
+
+    <div class="nav-label">System</div>
+    <nav class="nav" aria-label="System navigation">
+      <a href="S.html" class="active" aria-current="page"><span class="nav-icon">⚙</span>Settings</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-note">
+        <strong>⚙ Administration</strong>
+        Manage your profile, organization details and app preferences from one place.
+      </div>
+      <div class="sidebar-footer">Kista Management System<br>Settings Center</div>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" onclick="toggleSidebar(false)"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="icon-btn mobile-menu" onclick="toggleSidebar()" aria-label="Open navigation">☰</button>
+        <div class="breadcrumb">Kista / Administration / <strong>Settings</strong></div>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="headerThemeButton" onclick="toggleTheme()" title="Toggle appearance" aria-label="Toggle appearance">☾</button>
+        <div class="avatar-small" id="topAvatar">A</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="page-heading">
+        <div>
+          <h1>Admin Settings</h1>
+          <p class="subtitle">Manage your account, organization and application preferences.</p>
+        </div>
+        <div class="heading-actions">
+          <button class="btn" onclick="discardChanges()">↶ Discard changes</button>
+          <button class="btn btn-primary" onclick="saveSettings()">✓ Save changes</button>
+        </div>
+      </div>
+
+      <div class="status-strip">
+        <div class="status-left">
+          <div class="status-check">✓</div>
+          <div>
+            <strong>Your settings, your workspace</strong>
+            <small>Settings are saved in this browser on this device.</small>
+          </div>
+        </div>
+        <span class="badge badge-green" id="saveStatus">● All changes saved</span>
+      </div>
+
+      <div class="settings-layout">
+        <nav class="settings-nav" aria-label="Settings sections">
+          <div class="settings-nav-label">Preferences</div>
+          <button class="active" data-target="profile" onclick="goSection('profile',this)"><span class="s-icon">♙</span><span>Profile</span></button>
+          <button data-target="organization" onclick="goSection('organization',this)"><span class="s-icon">▣</span><span>Organization</span></button>
+          <button data-target="appearance" onclick="goSection('appearance',this)"><span class="s-icon">◐</span><span>Appearance</span></button>
+          <button data-target="security" onclick="goSection('security',this)"><span class="s-icon">♧</span><span>Security</span></button>
+          <button data-target="notifications" onclick="goSection('notifications',this)"><span class="s-icon">♧</span><span>Notifications</span></button>
+          <button data-target="preferences" onclick="goSection('preferences',this)"><span class="s-icon">☷</span><span>Preferences</span></button>
+          <button data-target="danger" onclick="goSection('danger',this)"><span class="s-icon">⚠</span><span>Advanced</span></button>
+        </nav>
+
+        <div class="settings-content">
+
+          <!-- PROFILE -->
+          <section class="settings-section" id="profile">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-icon">♙</div>
+                <div>
+                  <h2>Profile Information</h2>
+                  <p>Update your administrator details and profile photo.</p>
+                </div>
+              </div>
+              <span class="badge badge-green">Account</span>
+            </div>
+
+            <div class="section-body">
+              <div class="profile-editor">
+                <div class="profile-avatar" id="profileAvatar">A</div>
+                <div class="profile-actions">
+                  <strong>Administrator profile</strong>
+                  <p>JPG, PNG or WebP. Maximum file size: 2 MB.</p>
+                  <div class="profile-actions-buttons">
+                    <button class="btn btn-sm btn-primary" onclick="document.getElementById('photoInput').click()">↑ Upload photo</button>
+                    <button class="btn btn-sm" onclick="removePhoto()">Remove</button>
+                    <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" hidden onchange="uploadPhoto(event)">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="field">
+                  <label for="fullName">Full name <span class="required">*</span></label>
+                  <input class="input" id="fullName" data-setting="profile.fullName" maxlength="100" placeholder="Enter administrator name" autocomplete="name" required>
+                </div>
+                <div class="field">
+                  <label for="adminId">Administrator ID</label>
+                  <div style="display:flex;gap:7px">
+                    <input class="input" id="adminId" data-setting="profile.adminId" readonly>
+                    <button class="btn" type="button" onclick="copyAdminId()" title="Copy administrator ID">Copy</button>
+                  </div>
+                  <div class="help">Read-only account reference.</div>
+                </div>
+                <div class="field">
+                  <label for="email">Email address <span class="required">*</span></label>
+                  <input class="input" id="email" data-setting="profile.email" type="email" maxlength="150" placeholder="admin@example.com" autocomplete="email" required>
+                </div>
+                <div class="field">
+                  <label for="phone">Phone number</label>
+                  <input class="input" id="phone" data-setting="profile.phone" type="tel" maxlength="25" placeholder="+977 98XXXXXXXX" autocomplete="tel">
+                </div>
+                <div class="field">
+                  <label for="jobTitle">Job title</label>
+                  <input class="input" id="jobTitle" data-setting="profile.jobTitle" maxlength="80" placeholder="e.g. System Administrator">
+                </div>
+                <div class="field">
+                  <label for="timezone">Time zone</label>
+                  <select class="select" id="timezone" data-setting="profile.timezone">
+                    <option value="Asia/Kathmandu">Nepal Standard Time (UTC+05:45)</option>
+                    <option value="Asia/Kolkata">India Standard Time (UTC+05:30)</option>
+                    <option value="Asia/Dhaka">Bangladesh Standard Time (UTC+06:00)</option>
+                    <option value="UTC">Coordinated Universal Time (UTC)</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label for="bio">About</label>
+                  <textarea class="textarea" id="bio" data-setting="profile.bio" maxlength="500" placeholder="A short description about your role..."></textarea>
+                  <div class="help"><span id="bioCount">0</span>/500 characters</div>
+                </div>
+              </div>
+            </div>
+            <div class="section-footer">
+              <span class="footer-note">Your profile is stored locally in this browser.</span>
+              <button class="btn btn-sm" onclick="resetSection('profile')">Reset section</button>
+            </div>
+          </section>
+
+          <!-- ORGANIZATION -->
+          <section class="settings-section" id="organization">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-icon">▣</div>
+                <div>
+                  <h2>Organization Details</h2>
+                  <p>Set the organization identity used in your workspace.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-body">
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="orgName">Organization name <span class="required">*</span></label>
+                  <input class="input" id="orgName" data-setting="organization.name" maxlength="150" placeholder="Enter organization name" required>
+                </div>
+                <div class="field">
+                  <label for="orgEmail">Official email</label>
+                  <input class="input" id="orgEmail" data-setting="organization.email" type="email" maxlength="150" placeholder="office@example.com">
+                </div>
+                <div class="field">
+                  <label for="orgPhone">Official phone</label>
+                  <input class="input" id="orgPhone" data-setting="organization.phone" type="tel" maxlength="25" placeholder="Organization phone number">
+                </div>
+                <div class="field">
+                  <label for="orgWebsite">Website</label>
+                  <input class="input" id="orgWebsite" data-setting="organization.website" type="text" maxlength="200" placeholder="https://example.com">
+                  <div class="help">Optional. Enter the full website address.</div>
+                </div>
+                <div class="field">
+                  <label for="orgReg">Registration number</label>
+                  <input class="input" id="orgReg" data-setting="organization.registration" maxlength="100" placeholder="Registration or reference number">
+                </div>
+                <div class="field full">
+                  <label for="orgAddress">Office address</label>
+                  <textarea class="textarea" id="orgAddress" data-setting="organization.address" maxlength="500" placeholder="Street, city, district, province..."></textarea>
+                </div>
+              </div>
+
+              <hr class="divider">
+
+              <div class="field">
+                <label>Brand color</label>
+                <div class="color-options" id="brandColors">
+                  <button type="button" class="color-option selected" style="background:#16834a" data-color="#16834a" aria-label="Green" title="Green" onclick="setBrandColor('#16834a')"></button>
+                  <button type="button" class="color-option" style="background:#2563eb" data-color="#2563eb" aria-label="Blue" title="Blue" onclick="setBrandColor('#2563eb')"></button>
+                  <button type="button" class="color-option" style="background:#7c3aed" data-color="#7c3aed" aria-label="Purple" title="Purple" onclick="setBrandColor('#7c3aed')"></button>
+                  <button type="button" class="color-option" style="background:#c45b16" data-color="#c45b16" aria-label="Orange" title="Orange" onclick="setBrandColor('#c45b16')"></button>
+                  <button type="button" class="color-option" style="background:#0f766e" data-color="#0f766e" aria-label="Teal" title="Teal" onclick="setBrandColor('#0f766e')"></button>
+                </div>
+                <div class="color-custom" style="margin-top:13px">
+                  <input type="color" id="customColor" value="#16834a" aria-label="Choose custom brand color" onchange="setBrandColor(this.value)">
+                  <span class="help" style="margin:0">Choose a custom color</span>
+                  <code id="colorCode">#16834a</code>
+                </div>
+              </div>
+              <div class="info-box">
+                <strong>About organization settings</strong>
+                These details are stored as app preferences. This standalone page does not automatically change other pages or generate official documents.
+              </div>
+            </div>
+            <div class="section-footer">
+              <span class="footer-note">Organization information is independent of customer records.</span>
+              <button class="btn btn-sm" onclick="resetSection('organization')">Reset section</button>
+            </div>
+          </section>
+
+          <!-- APPEARANCE -->
+          <section class="settings-section" id="appearance">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-icon">◐</div>
+                <div>
+                  <h2>Appearance</h2>
+                  <p>Customize the look and feel of your Kista workspace.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-body">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Dark mode</strong>
+                  <p>Use a darker interface for low-light environments.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="darkMode" data-setting="appearance.darkMode" onchange="applyAppearance()">
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Compact layout</strong>
+                  <p>Reduce spacing to fit more information on screen.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="compact" data-setting="appearance.compact">
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Show save status</strong>
+                  <p>Display whether the current settings have been saved.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="showStatus" data-setting="appearance.showStatus" onchange="applyAppearance()">
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="info-box">
+                <strong>Appearance applies to this page</strong>
+                Other HTML pages need their own theme integration to share these appearance preferences.
+              </div>
+            </div>
+            <div class="section-footer">
+              <span class="footer-note">Preview changes immediately; save to retain them in this browser.</span>
+              <button class="btn btn-sm" onclick="resetSection('appearance');applyAppearance()">Reset section</button>
+            </div>
+          </section>
+
+          <!-- SECURITY -->
+          <section class="settings-section" id="security">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-icon">♧</div>
+                <div>
+                  <h2>Security & Access</h2>
+                  <p>Review security preferences and password guidance.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-body">
+              <div class="security-box">
+                <div class="security-heading">
+                  <strong>Two-factor authentication</strong>
+                  <span class="badge badge-gray">Preference only</span>
+                </div>
+                <p>Keep a record of whether you want an additional authentication step. This standalone page does not implement real two-factor authentication.</p>
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <strong>Enable 2FA preference</strong>
+                    <p>Record your preferred security setting.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="twoFactor" data-setting="security.twoFactor">
+                    <span class="switch-track"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="security-box">
+                <div class="security-heading">
+                  <strong>Login alerts</strong>
+                  <span class="badge badge-gray">Preference only</span>
+                </div>
+                <p>Record whether you want alerts about account sign-ins. Actual login alerts require a server and authentication system.</p>
+                <div class="setting-row">
+                  <div class="setting-info">
+                    <strong>Sign-in alert preference</strong>
+                    <p>Store your preference for login alerts.</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="loginAlerts" data-setting="security.loginAlerts">
+                    <span class="switch-track"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="security-box">
+                <div class="security-heading"><strong>Password management</strong></div>
+                <p>This standalone settings page cannot change a real account password. Password changes should be handled by your authentication backend.</p>
+                <button class="btn" onclick="showToast('Backend required','Connect an authentication system to implement password changes.',true)">Password requirements</button>
+              </div>
+
+              <div class="info-box">
+                <strong>Important security limitation</strong>
+                Browser storage is not a secure account database. Do not use these local preferences as authentication, authorization, password storage or proof of identity.
+              </div>
+            </div>
+            <div class="section-footer">
+              <span class="footer-note">These switches record preferences only.</span>
+              <button class="btn btn-sm" onclick="resetSection('security')">Reset section</button>
+            </div>
+          </section>
+
+          <!-- NOTIFICATIONS -->
+          <section class="settings-section" id="notifications">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-icon">♧</div>
+                <div>
+                  <h2>Notifications</h2>
+                  <p>Choose which notification preferences you want to keep.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-body">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Payment received</strong>
+                  <p>Preference for notifications about recorded payments.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="paymentNotifications" data-setting="notifications.paymentReceived">
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Customer updates</strong>
+                  <p>Preference for notifications about customer information changes.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="customerNotifications" data-setting="notifications.customerUpdates">
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Monthly reminders</strong>
+                  <p>Preference for monthly contribution reminders.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="monthlyNotifications" data-setting="notifications.monthlyReminders">
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>System announcements</strong>
+                  <p>Preference for important application notices.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="systemNotifications" data-setting="notifications.systemAnnouncements">
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Email notifications</strong>
+                  <p>Preference for receiving notifications by email. Sending email requires backend integration.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="emailNotifications" data-setting="notifications.emailEnabled">
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+              <div class="info-box">
+                <strong>Notifications are not sent by this page</strong>
+                These switches save your preferences. Automated reminders, emails and payment alerts need to be connected to the appropriate app services.
+              </div>
+            </div>
+            <div class="section-footer">
+              <span class="footer-note">Manage notification preferences in one place.</span>
+              <button class="btn btn-sm" onclick="resetSection('notifications')">Reset section</button>
+            </div>
+          </section>
+
+          <!-- PREFERENCES -->
+          <section class="settings-section" id="preferences">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-icon">☷</div>
+                <div>
+                  <h2>Application Preferences</h2>
+                  <p>Choose your preferred language, currency and display formats.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-body">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="language">Language</label>
+                  <select class="select" id="language" data-setting="preferences.language">
+                    <option value="en">English</option>
+                    <option value="ne">नेपाली (Nepali)</option>
+                  </select>
+                  <div class="help">Stores your preference; does not automatically translate this page.</div>
+                </div>
+                <div class="field">
+                  <label for="currency">Currency</label>
+                  <select class="select" id="currency" data-setting="preferences.currency">
+                    <option value="NPR">NPR — Nepalese Rupee</option>
+                    <option value="INR">INR — Indian Rupee</option>
+                    <option value="USD">USD — US Dollar</option>
+                  </select>
+                  <div class="help">Does not convert existing payment amounts.</div>
+                </div>
+                <div class="field">
+                  <label for="dateFormat">Date display format</label>
+                  <select class="select" id="dateFormat" data-setting="preferences.dateFormat">
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                    <option value="BS">Bikram Sambat (BS) preference</option>
+                  </select>
+                  <div class="help">Choosing BS records the preference; a Nepali calendar must be implemented separately on date-input pages.</div>
+                </div>
+                <div class="field">
+                  <label for="pageSize">Rows per page</label>
+                  <select class="select" id="pageSize" data-setting="preferences.pageSize">
+                    <option value="10">10 rows</option>
+                    <option value="25">25 rows</option>
+                    <option value="50">50 rows</option>
+                    <option value="100">100 rows</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="firstDay">First day of the week</label>
+                  <select class="select" id="firstDay" data-setting="preferences.firstDay">
+                    <option value="sunday">Sunday</option>
+                    <option value="monday">Monday</option>
+                    <option value="saturday">Saturday</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="numberFormat">Number format</label>
+                  <select class="select" id="numberFormat" data-setting="preferences.numberFormat">
+                    <option value="en-IN">Indian/Nepali grouping (12,34,567)</option>
+                    <option value="en-US">International grouping (1,234,567)</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label for="landingPage">Preferred starting page</label>
+                  <select class="select" id="landingPage" data-setting="preferences.landingPage">
+                    <option value="dashboard.html">Dashboard</option>
+                    <option value="RC.html">Customers</option>
+                    <option value="CO.html">Record Payment</option>
+                    <option value="MP.html">Payment History</option>
+                    <option value="monthlyrecord.html">Monthly Records</option>
+                    <option value="S.html">Settings</option>
+                  </select>
+                  <div class="help">This saves the selected page preference. It does not change your browser's current page automatically.</div>
+                </div>
+              </div>
+            </div>
+            <div class="section-footer">
+              <span class="footer-note">Display preferences do not alter stored contribution records.</span>
+              <button class="btn btn-sm" onclick="resetSection('preferences')">Reset section</button>
+            </div>
+          </section>
+
+          <!-- ADVANCED -->
+          <section class="settings-section danger-card" id="danger">
+            <div class="section-header">
+              <div class="section-title">
+                <div class="section-icon">⚠</div>
+                <div>
+                  <h2>Advanced Settings</h2>
+                  <p>Manage this page's saved preferences.</p>
+                </div>
+              </div>
+              <span class="badge badge-red">Use carefully</span>
+            </div>
+
+            <div class="section-body">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Reset settings to defaults</strong>
+                  <p>Restore the default values for this settings page only.</p>
+                </div>
+                <button class="btn btn-danger" onclick="resetSettings()">Reset settings</button>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <strong>Clear profile photo</strong>
+                  <p>Remove the locally stored administrator photo.</p>
+                </div>
+                <button class="btn" onclick="removePhoto()">Remove photo</button>
+              </div>
+              <div class="info-box">
+                <strong>What reset does</strong>
+                Resetting affects only the settings stored under this page's storage key. It does not intentionally delete customer records, contributions or payment history.
+              </div>
+            </div>
+          </section>
+
+          <div class="bottom-actions">
+            <p id="lastSavedText">Changes are saved only when you select Save changes.</p>
+            <div class="bottom-actions-buttons">
+              <button class="btn" onclick="discardChanges()">Discard changes</button>
+              <button class="btn btn-primary" onclick="saveSettings()">✓ Save all settings</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+"use strict";
+
+/*
+  KISTA ADMIN SETTINGS
+  All styles and logic are embedded in this file.
+  Storage is local to this browser and is not a secure database.
+*/
+
+const STORAGE_KEY = "contribution_admin_settings_v1";
+const PHOTO_KEY = "kista_admin_profile_photo_v1";
+
+const DEFAULTS = {
+  profile: {
+    fullName: "Administrator",
+    adminId: "KISTA-ADMIN-001",
+    email: "",
+    phone: "",
+    jobTitle: "System Administrator",
+    timezone: "Asia/Kathmandu",
+    bio: ""
+  },
+  organization: {
+    name: "Kista",
+    email: "",
+    phone: "",
+    website: "",
+    registration: "",
+    address: "",
+    brandColor: "#16834a"
+  },
+  appearance: {
+    darkMode: false,
+    compact: false,
+    showStatus: true
+  },
+  security: {
+    twoFactor: false,
+    loginAlerts: true
+  },
+  notifications: {
+    paymentReceived: true,
+    customerUpdates: true,
+    monthlyReminders: true,
+    systemAnnouncements: true,
+    emailEnabled: false
+  },
+  preferences: {
+    language: "en",
+    currency: "NPR",
+    dateFormat: "YYYY-MM-DD",
+    pageSize: "25",
+    firstDay: "sunday",
+    numberFormat: "en-IN",
+    landingPage: "dashboard.html"
+  }
+};
+
+let settings = clone(DEFAULTS);
+let savedSnapshot = null;
+let photoData = "";
+let savedPhotoSnapshot = "";
+let isDirty = false;
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function mergeObjects(defaults, incoming) {
+  const result = clone(defaults);
+  if (!incoming || typeof incoming !== "object" || Array.isArray(incoming)) {
+    return result;
+  }
+
+  for (const key of Object.keys(defaults)) {
+    if (
+      Object.prototype.hasOwnProperty.call(incoming, key) &&
+      incoming[key] &&
+      typeof incoming[key] === "object" &&
+      !Array.isArray(incoming[key]) &&
+      typeof defaults[key] === "object"
+    ) {
+      result[key] = mergeObjects(defaults[key], incoming[key]);
+    } else if (Object.prototype.hasOwnProperty.call(incoming, key)) {
+      result[key] = incoming[key];
+    }
+  }
+
+  return result;
+}
+
+function getPath(object, path) {
+  return path.split(".").reduce((value, key) => value?.[key], object);
+}
+
+function setPath(object, path, value) {
+  const keys = path.split(".");
+  let current = object;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (!current[keys[i]] || typeof current[keys[i]] !== "object") {
+      current[keys[i]] = {};
+    }
+    current = current[keys[i]];
+  }
+
+  current[keys[keys.length - 1]] = value;
+}
+
+function readSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    settings = raw ? mergeObjects(DEFAULTS, JSON.parse(raw)) : clone(DEFAULTS);
+  } catch (error) {
+    settings = clone(DEFAULTS);
+    showToast("Storage unavailable", "Browser storage could not be read. Settings may not persist.", true);
+  }
+
+  try {
+    photoData = localStorage.getItem(PHOTO_KEY) || "";
+  } catch (error) {
+    photoData = "";
+  }
+
+  savedSnapshot = clone(settings);
+  savedPhotoSnapshot = photoData;
+}
+
+function fillForm() {
+  document.querySelectorAll("[data-setting]").forEach(element => {
+    const path = element.dataset.setting;
+    const value = getPath(settings, path);
+
+    if (element.type === "checkbox") {
+      element.checked = Boolean(value);
+    } else {
+      element.value = value == null ? "" : String(value);
+    }
+  });
+
+  updateBioCount();
+  updateBrandColorUI();
+  renderAvatar();
+  applyAppearance();
+  updateDirtyStatus();
+}
+
+function collectForm() {
+  const result = clone(settings);
+
+  document.querySelectorAll("[data-setting]").forEach(element => {
+    const path = element.dataset.setting;
+    let value;
+
+    if (element.type === "checkbox") {
+      value = element.checked;
+    } else {
+      value = element.value.trim();
+    }
+
+    setPath(result, path, value);
+  });
+
+  return result;
+}
+
+function markDirty() {
+  settings = collectForm();
+  isDirty = true;
+  updateDirtyStatus();
+}
+
+function updateDirtyStatus() {
+  const badge = document.getElementById("saveStatus");
+  const lastSaved = document.getElementById("lastSavedText");
+  const showStatus = document.getElementById("showStatus")?.checked !== false;
+
+  if (badge) {
+    badge.style.display = showStatus ? "" : "none";
+    badge.className = isDirty ? "badge badge-gray" : "badge badge-green";
+    badge.textContent = isDirty ? "● Unsaved changes" : "● All changes saved";
+  }
+
+  if (lastSaved) {
+    lastSaved.textContent = isDirty
+      ? "You have unsaved changes. Save before leaving this page."
+      : "Your latest settings are saved in this browser.";
+  }
+}
+
+function validateSettings(data) {
+  const name = String(data.profile.fullName || "").trim();
+  const email = String(data.profile.email || "").trim();
+  const organization = String(data.organization.name || "").trim();
+  const organizationEmail = String(data.organization.email || "").trim();
+  const website = String(data.organization.website || "").trim();
+
+  if (!name) {
+    return { field: "fullName", message: "Please enter the administrator's full name." };
+  }
+
+  if (!email) {
+    return { field: "email", message: "Please enter the administrator's email address." };
+  }
+
+  if (!isValidEmail(email)) {
+    return { field: "email", message: "Please enter a valid administrator email address." };
+  }
+
+  if (organizationEmail && !isValidEmail(organizationEmail)) {
+    return { field: "orgEmail", message: "Please enter a valid organization email address." };
+  }
+
+  if (!organization) {
+    return { field: "orgName", message: "Please enter an organization name." };
+  }
+
+  if (website && !isValidWebsite(website)) {
+    return { field: "orgWebsite", message: "Please enter a valid website address, such as https://example.com." };
+  }
+
+  return null;
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isValidWebsite(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function saveSettings() {
+  const data = collectForm();
+  const validation = validateSettings(data);
+
+  if (validation) {
+    const field = document.getElementById(validation.field);
+    if (field) {
+      field.focus();
+      field.setAttribute("aria-invalid", "true");
+    }
+    showToast("Check your details", validation.message, true);
+    return;
+  }
+
+  document.querySelectorAll("[aria-invalid='true']").forEach(field => {
+    field.removeAttribute("aria-invalid");
+  });
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    if (photoData) {
+      localStorage.setItem(PHOTO_KEY, photoData);
+    } else {
+      localStorage.removeItem(PHOTO_KEY);
+    }
+
+    settings = clone(data);
+    savedSnapshot = clone(data);
+    savedPhotoSnapshot = photoData;
+    isDirty = false;
+
+    applyAppearance();
+    renderAvatar();
+    updateDirtyStatus();
+    showToast("Settings saved", "Your settings have been saved in this browser.");
+  } catch (error) {
+    showToast(
+      "Could not save settings",
+      "Browser storage may be full or unavailable. Try removing a large profile photo.",
+      true
+    );
+  }
+}
+
+function discardChanges() {
+  if (isDirty && !confirm("Discard your unsaved changes?")) return;
+
+  settings = clone(savedSnapshot || DEFAULTS);
+  photoData = savedPhotoSnapshot || "";
+  isDirty = false;
+  fillForm();
+  showToast("Changes discarded", "Your form has been restored to its last saved state.");
+}
+
+function resetSection(sectionName) {
+  const section = document.getElementById(sectionName);
+  if (!section) return;
+
+  if (!confirm("Reset this section to its default values? Save changes afterward to keep the reset.")) {
+    return;
+  }
+
+  const defaultSection = DEFAULTS[sectionName];
+  if (!defaultSection) return;
+
+  settings[sectionName] = clone(defaultSection);
+
+  section.querySelectorAll("[data-setting]").forEach(element => {
+    const path = element.dataset.setting;
+    const value = getPath(settings, path);
+
+    if (element.type === "checkbox") {
+      element.checked = Boolean(value);
+    } else {
+      element.value = value == null ? "" : String(value);
+    }
+  });
+
+  if (sectionName === "appearance") applyAppearance();
+  if (sectionName === "organization") updateBrandColorUI();
+  if (sectionName === "profile") renderAvatar();
+
+  updateBioCount();
+  markDirty();
+  showToast("Section reset", "Review the defaults and save your changes.");
+}
+
+function resetSettings() {
+  if (!confirm("Reset all settings on this page to defaults? Customer and payment records are not intentionally affected.")) {
+    return;
+  }
+
+  settings = clone(DEFAULTS);
+  photoData = "";
+  isDirty = true;
+  fillForm();
+  markDirty();
+  showToast("Defaults restored", "Save changes to keep the default settings.");
+}
+
+function toggleTheme() {
+  const checkbox = document.getElementById("darkMode");
+  checkbox.checked = !checkbox.checked;
+  applyAppearance();
+  markDirty();
+}
+
+function applyAppearance() {
+  const dark = document.getElementById("darkMode")?.checked || false;
+  const compact = document.getElementById("compact")?.checked || false;
+  const primary = document.getElementById("customColor")?.value || "#16834a";
+
+  document.body.classList.toggle("dark", dark);
+  document.body.classList.toggle("compact", compact);
+  document.documentElement.style.setProperty("--primary", primary);
+
+  const headerButton = document.getElementById("headerThemeButton");
+  if (headerButton) {
+    headerButton.textContent = dark ? "☀" : "☾";
+    headerButton.title = dark ? "Switch to light mode" : "Switch to dark mode";
+  }
+
+  updateDirtyStatus();
+}
+
+function setBrandColor(color) {
+  if (!/^#[0-9a-fA-F]{6}$/.test(color)) return;
+
+  const customColor = document.getElementById("customColor");
+  if (customColor) customColor.value = color;
+
+  const colorCode = document.getElementById("colorCode");
+  if (colorCode) colorCode.textContent = color.toLowerCase();
+
+  settings.organization.brandColor = color.toLowerCase();
+  updateBrandColorUI();
+  applyAppearance();
+  markDirty();
+}
+
+function updateBrandColorUI() {
+  const color = getPath(settings, "organization.brandColor") || "#16834a";
+  const customColor = document.getElementById("customColor");
+  if (customColor) customColor.value = color;
+
+  const colorCode = document.getElementById("colorCode");
+  if (colorCode) colorCode.textContent = color;
+
+  document.querySelectorAll(".color-option").forEach(button => {
+    button.classList.toggle(
+      "selected",
+      button.dataset.color.toLowerCase() === color.toLowerCase()
+    );
+  });
+
+  document.documentElement.style.setProperty("--primary", color);
+}
+
+function updateBioCount() {
+  const bio = document.getElementById("bio");
+  const count = document.getElementById("bioCount");
+  if (bio && count) count.textContent = bio.value.length;
+}
+
+function renderAvatar() {
+  const name = document.getElementById("fullName")?.value.trim() || "Administrator";
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part.charAt(0).toUpperCase())
+    .join("") || "A";
+
+  const profile = document.getElementById("profileAvatar");
+  const top = document.getElementById("topAvatar");
+
+  [profile, top].forEach(element => {
+    if (!element) return;
+
+    if (photoData) {
+      element.replaceChildren();
+      const image = document.createElement("img");
+      image.src = photoData;
+      image.alt = "Administrator profile photo";
+      element.appendChild(image);
+    } else {
+      element.textContent = initials;
+    }
+  });
+}
+
+function uploadPhoto(event) {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) return;
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowedTypes.includes(file.type)) {
+    showToast("Unsupported image", "Choose a JPG, PNG or WebP image.", true);
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    showToast("Image too large", "Choose an image smaller than 2 MB.", true);
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    if (typeof reader.result !== "string") {
+      showToast("Upload failed", "The selected image could not be read.", true);
+      return;
+    }
+
+    photoData = reader.result;
+    renderAvatar();
+    isDirty = true;
+    updateDirtyStatus();
+    showToast("Photo selected", "Save changes to store your new profile photo.");
+  };
+
+  reader.onerror = () => {
+    showToast("Upload failed", "The selected image could not be read.", true);
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function removePhoto() {
+  if (!photoData) {
+    showToast("No profile photo", "There is no saved photo to remove.");
+    return;
+  }
+
+  if (!confirm("Remove the administrator profile photo?")) return;
+
+  photoData = "";
+  renderAvatar();
+  isDirty = true;
+  updateDirtyStatus();
+  showToast("Photo removed", "Save changes to retain this update.");
+}
+
+async function copyAdminId() {
+  const value = document.getElementById("adminId").value;
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(value);
+    } else {
+      const temporary = document.createElement("textarea");
+      temporary.value = value;
+      temporary.style.position = "fixed";
+      temporary.style.opacity = "0";
+      document.body.appendChild(temporary);
+      temporary.select();
+
+      const successful = document.execCommand("copy");
+      temporary.remove();
+
+      if (!successful) throw new Error("Copy command failed");
+    }
+
+    showToast("Copied", "Administrator ID copied to clipboard.");
+  } catch {
+    showToast("Unable to copy", "Please select and copy the ID manually.", true);
+  }
+}
+
+function goSection(sectionId, button) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+
+  document.querySelectorAll(".settings-nav button").forEach(item => {
+    item.classList.remove("active");
+  });
+
+  if (button) {
+    button.classList.add("active");
+  } else {
+    const matching = document.querySelector(`.settings-nav button[data-target="${sectionId}"]`);
+    matching?.classList.add("active");
+  }
+
+  section.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function toggleSidebar(force) {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const open = typeof force === "boolean"
+    ? force
+    : !sidebar.classList.contains("open");
+
+  sidebar.classList.toggle("open", open);
+  overlay.classList.toggle("show", open);
+}
+
+function showToast(title, message, isError = false) {
+  const container = document.getElementById("toastContainer");
+  const toast = document.createElement("div");
+  toast.className = "toast" + (isError ? " error" : "");
+
+  const icon = document.createElement("div");
+  icon.textContent = isError ? "!" : "✓";
+  icon.style.fontWeight = "900";
+
+  const textWrapper = document.createElement("div");
+  const strong = document.createElement("strong");
+  strong.textContent = title;
+  const detail = document.createElement("span");
+  detail.textContent = message;
+
+  textWrapper.append(strong, detail);
+  toast.append(icon, textWrapper);
+  container.appendChild(toast);
+
+  // Remove the notification after a short delay without using HTML injection.
+  setTimeout(() => toast.remove(), 4200);
+}
+
+function attachListeners() {
+  document.querySelectorAll("[data-setting]").forEach(element => {
+    element.addEventListener("input", () => {
+      markDirty();
+      if (element.id === "bio") updateBioCount();
+      if (element.id === "fullName") renderAvatar();
+      if (element.id === "darkMode" || element.id === "compact" || element.id === "showStatus") {
+        applyAppearance();
+      }
+    });
+
+    element.addEventListener("change", () => {
+      markDirty();
+      if (element.id === "darkMode" || element.id === "compact" || element.id === "showStatus") {
+        applyAppearance();
+      }
+    });
+  });
+
+  document.querySelectorAll(".settings-section").forEach(section => {
+    // Keep the section menu in sync when the user scrolls.
+    if (!("IntersectionObserver" in window)) return;
+  });
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (visible) {
+        document.querySelectorAll(".settings-nav button").forEach(button => {
+          button.classList.toggle("active", button.dataset.target === visible.target.id);
+        });
+      }
+    }, { rootMargin: "-100px 0px -60% 0px", threshold: [0, .1, .25, .5] });
+
+    document.querySelectorAll(".settings-section").forEach(section => observer.observe(section));
+  }
+
+  window.addEventListener("beforeunload", event => {
+    if (!isDirty) return;
+    event.preventDefault();
+    event.returnValue = "";
+  });
+}
+
+function initialize() {
+  readSettings();
+  fillForm();
+  attachListeners();
+
+  // Preview edits as the administrator types, without changing saved settings.
+  document.getElementById("fullName").addEventListener("input", renderAvatar);
+  document.getElementById("customColor").addEventListener("input", event => {
+    document.documentElement.style.setProperty("--primary", event.target.value);
+    document.getElementById("colorCode").textContent = event.target.value.toLowerCase();
+  });
+}
+
+initialize();
+</script>
+</body>
+</html>
